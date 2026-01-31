@@ -20,3 +20,6 @@ serde = ["dep:serde"]
 [dev-dependencies]
 embedded-hal-mock = { version = "0.11.1", features = ["eh1"] }
 futures = "0.3.30"
+
+[workspace]
+members = [".", "examples-nrf52833"]

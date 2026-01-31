@@ -105,7 +105,7 @@ cargo llvm-cov --html --open
 
 ## Links
 
-- Datasheet: https://sensirion.com/resource/datasheet/STCC4
+- Datasheet: https://sensirion.com/resource/datasheet/STCC4 (developed on datasheet version 1)
 
 ## License
 
