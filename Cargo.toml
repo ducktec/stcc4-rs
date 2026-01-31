@@ -2,6 +2,14 @@
 name = "stcc4-rs"
 version = "0.1.0"
 edition = "2024"
+license = "MIT OR Apache-2.0"
+authors = ["Robert Wiewel <dev@ducktec.de>"]
+description = "A Rust no-std driver for the Sensirion STCC4 CO2 sensor."
+keywords = ["stcc4", "co2", "sensor", "embedded", "no-std"]
+categories = ["embedded", "no-std"]
+readme = "README.md"
+repository = "https://github.com/ducktec/stcc4-rs"
+documentation = "https://docs.rs/stcc4-rs"
 
 [dependencies]
 embedded-hal = "1.0.0"
@@ -23,3 +31,6 @@ futures = "0.3.30"
 
 [workspace]
 members = [".", "examples-nrf52833"]
+
+[package.metadata.docs.rs]
+features = ["async"]
