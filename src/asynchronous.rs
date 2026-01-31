@@ -55,8 +55,11 @@ where
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
         defmt::debug!("STCC4_driver: start continuous measurement");
-        self.state = ModuleState::Measuring;
-        self.send_wait(CommandId::StartContinuousMeasurement).await
+        let result = self.send_wait(CommandId::StartContinuousMeasurement).await;
+        if result.is_ok() {
+            self.state = ModuleState::Measuring;
+        }
+        result
     }
 
     /// Stop continuous measurement and return to idle.

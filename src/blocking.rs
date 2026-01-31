@@ -13,7 +13,7 @@ use crate::{
 };
 
 /// Represents an I2C-connected STCC4 sensor (blocking).
-#[derive(Copy, Clone, Debug)]
+#[derive(Debug)]
 pub struct Stcc4<I2C, D> {
     delay: D,
     i2c: I2C,
@@ -56,8 +56,11 @@ where
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
         defmt::debug!("STCC4_driver: start continuous measurement");
-        self.state = ModuleState::Measuring;
-        self.send_wait(CommandId::StartContinuousMeasurement)
+        let result = self.send_wait(CommandId::StartContinuousMeasurement);
+        if result.is_ok() {
+            self.state = ModuleState::Measuring;
+        }
+        result
     }
 
     /// Stop continuous measurement and return to idle.

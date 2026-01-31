@@ -125,7 +125,7 @@ enum ModuleState {
 type Result<T, E> = core::result::Result<T, Stcc4Error<E>>;
 
 /// Represents any error that may happen during communication.
-#[derive(Copy, Clone, Debug, Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum Stcc4Error<E> {
     /// An error occurred while reading from the sensor.
