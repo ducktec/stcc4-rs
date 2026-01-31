@@ -26,6 +26,9 @@
 //!
 //! ## Usage (async)
 //! ```no_run
+//! # fn main() {}
+//! # #[cfg(feature = "async")]
+//! # {
 //! use stcc4_rs::asynchronous::Stcc4;
 //!
 //! # async fn example<I2C, D>(i2c: I2C, delay: D)
@@ -37,6 +40,7 @@
 //! stcc4.start_continuous_measurement().await.ok();
 //! let measurement = stcc4.read_measurement().await.ok();
 //! stcc4.stop_continuous_measurement().await.ok();
+//! # }
 //! # }
 //! ```
 #![cfg_attr(not(test), no_std)]
@@ -160,6 +164,7 @@ pub struct Measurement {
 /// Sensor status (16-bit word).
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SensorStatus {
     /// Raw status word.
     pub raw: u16,
@@ -175,6 +180,7 @@ impl SensorStatus {
 /// Self test result (raw word + helpers).
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SelfTestResult {
     /// Raw self-test word.
     pub raw: u16,
@@ -210,6 +216,7 @@ impl SelfTestResult {
 /// Forced recalibration correction (ppm).
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct FrcCorrection(pub i16);
 
 /// Product ID and serial number.
