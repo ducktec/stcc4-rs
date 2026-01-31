@@ -10,7 +10,7 @@
 //!
 //! ## Usage (blocking)
 //! ```no_run
-//! use stcc4_rs::blocking::Stcc4;
+//! use stcc4::blocking::Stcc4;
 //!
 //! # fn example<I2C, D>(i2c: I2C, delay: D)
 //! # where
@@ -29,7 +29,7 @@
 //! # fn main() {}
 //! # #[cfg(feature = "async")]
 //! # {
-//! use stcc4_rs::asynchronous::Stcc4;
+//! use stcc4::asynchronous::Stcc4;
 //!
 //! # async fn example<I2C, D>(i2c: I2C, delay: D)
 //! # where

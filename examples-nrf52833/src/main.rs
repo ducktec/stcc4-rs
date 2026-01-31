@@ -8,7 +8,7 @@ use embassy_nrf::bind_interrupts;
 use embassy_nrf::twim::{self, Twim};
 use embassy_time::{Delay, Timer};
 use panic_probe as _;
-use stcc4_rs::asynchronous::Stcc4;
+use stcc4::asynchronous::Stcc4;
 
 bind_interrupts!(struct Irqs {
     SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0 =>

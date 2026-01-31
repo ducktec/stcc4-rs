@@ -33,7 +33,7 @@ defmt-rtt = "0.4.1"
 panic-probe = { version = "0.3.2", features = ["print-defmt"] }
 
 # Driver
-stcc4-rs = { path = "..", features = ["async", "defmt"] }
+stcc4 = { path = "..", features = ["async", "defmt"] }
 
 [profile.dev]
 codegen-units = 1

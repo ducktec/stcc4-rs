@@ -2,6 +2,9 @@
 
 A Rust `no-std` driver for the Sensirion STCC4 CO2 sensor with blocking and async APIs.
 
+[![Crates.io](https://img.shields.io/crates/v/stcc4.svg)](https://crates.io/crates/stcc4)
+[![Docs.rs](https://docs.rs/stcc4/badge.svg)](https://docs.rs/stcc4)
+
 ## Description
 
 This library provides a platform-agnostic Rust interface for the STCC4 CO2 sensor over I2C. It is designed for embedded, `no-std` environments and supports both blocking and async access patterns based on `embedded-hal` and `embedded-hal-async`.
@@ -44,13 +47,13 @@ Add the crate to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-stcc4-rs = "0.1.0"
+stcc4 = "0.1.0"
 ```
 
 ### Blocking example
 
 ```rust
-use stcc4_rs::blocking::Stcc4;
+use stcc4::blocking::Stcc4;
 
 # fn example<I2C, D>(i2c: I2C, delay: D)
 # where
@@ -68,7 +71,7 @@ stcc4.stop_continuous_measurement().ok();
 ### Async example
 
 ```rust
-use stcc4_rs::asynchronous::Stcc4;
+use stcc4::asynchronous::Stcc4;
 
 # async fn example<I2C, D>(i2c: I2C, delay: D)
 # where
@@ -119,3 +122,6 @@ at your option.
 ## Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in this work is dual licensed as above, without any additional terms or conditions.
+
+## Change Log
+- Version 0.1.0 - Initial release

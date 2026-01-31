@@ -1,5 +1,5 @@
 [package]
-name = "stcc4-rs"
+name = "stcc4"
 version = "0.1.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -9,7 +9,7 @@ keywords = ["stcc4", "co2", "sensor", "embedded", "no-std"]
 categories = ["embedded", "no-std"]
 readme = "README.md"
 repository = "https://github.com/ducktec/stcc4-rs"
-documentation = "https://docs.rs/stcc4-rs"
+documentation = "https://docs.rs/stcc4"
 
 [dependencies]
 embedded-hal = "1.0.0"
