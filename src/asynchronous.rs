@@ -6,8 +6,8 @@
 
 use crate::{
     CommandId, EXIT_SLEEP_PAYLOAD, FrcCorrection, I2C_GENERAL_CALL_ADDR, MAX_RX_BYTES,
-    MAX_TX_BYTES, Measurement, ModuleState, ProductId, Result, SOFT_RESET_CMD, SensorStatus,
-    SelfTestResult, Stcc4Error, STCC4_ADDR_DEFAULT, crc_internal, frc_correction_from_raw,
+    MAX_TX_BYTES, Measurement, ModuleState, ProductId, Result, SOFT_RESET_CMD, STCC4_ADDR_DEFAULT,
+    SelfTestResult, SensorStatus, Stcc4Error, crc_internal, frc_correction_from_raw,
     get_execution_time, humidity_percent_to_raw, pressure_pa_to_raw, raw_to_humidity_percent,
     raw_to_temperature_c, temperature_c_to_raw,
 };
@@ -54,7 +54,7 @@ where
     pub async fn start_continuous_measurement(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: start continuous measurement");
+        defmt::debug!("STCC4_driver: start continuous measurement");
         self.state = ModuleState::Measuring;
         self.send_wait(CommandId::StartContinuousMeasurement).await
     }
@@ -63,7 +63,7 @@ where
     pub async fn stop_continuous_measurement(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Measuring)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: stop continuous measurement");
+        defmt::debug!("STCC4_driver: stop continuous measurement");
         let result = self.send_wait(CommandId::StopContinuousMeasurement).await;
         if result.is_ok() {
             self.state = ModuleState::Idle;
@@ -83,7 +83,7 @@ where
 
         #[cfg(feature = "defmt")]
         defmt::debug!(
-            "stcc4: measurement raw co2={} t_raw={} rh_raw={} status=0x{=u16:04X}",
+            "STCC4_driver: measurement raw co2={} t_raw={} rh_raw={} status=0x{=u16:04X}",
             data[0],
             data[1],
             data[2],
@@ -112,7 +112,7 @@ where
 
         #[cfg(feature = "defmt")]
         defmt::debug!(
-            "stcc4: set rht compensation t_raw={} rh_raw={}",
+            "STCC4_driver: set rht compensation t_raw={} rh_raw={}",
             temp_raw,
             rh_raw
         );
@@ -128,7 +128,7 @@ where
 
         #[cfg(feature = "defmt")]
         defmt::debug!(
-            "stcc4: set pressure compensation p_raw={}",
+            "STCC4_driver: set pressure compensation p_raw={}",
             pressure_raw
         );
 
@@ -140,7 +140,7 @@ where
     pub async fn measure_single_shot(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: single shot measurement");
+        defmt::debug!("STCC4_driver: single shot measurement");
         self.send_wait(CommandId::MeasureSingleShot).await
     }
 
@@ -148,7 +148,7 @@ where
     pub async fn enter_sleep_mode(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: enter sleep mode");
+        defmt::debug!("STCC4_driver: enter sleep mode");
         let result = self.send_wait(CommandId::EnterSleepMode).await;
         if result.is_ok() {
             self.state = ModuleState::Sleep;
@@ -160,13 +160,13 @@ where
     pub async fn exit_sleep_mode(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Sleep)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: exit sleep mode");
+        defmt::debug!("STCC4_driver: exit sleep mode");
 
         let write_result = self.i2c.write(self.address, &[EXIT_SLEEP_PAYLOAD]).await;
 
         if let Err(_e) = write_result {
             #[cfg(feature = "defmt")]
-            defmt::warn!("stcc4: exit sleep mode not acknowledged");
+            defmt::warn!("STCC4_driver: exit sleep mode not acknowledged");
         }
 
         self.delay.delay_ms(5).await;
@@ -178,14 +178,14 @@ where
     pub async fn perform_conditioning(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: perform conditioning");
+        defmt::debug!("STCC4_driver: perform conditioning");
         self.send_wait(CommandId::PerformConditioning).await
     }
 
     /// Perform a soft reset (I2C general call, not acknowledged).
     pub async fn perform_soft_reset(&mut self) -> Result<(), I2C::Error> {
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: perform soft reset");
+        defmt::debug!("STCC4_driver: perform soft reset");
         let write_result = self
             .i2c
             .write(I2C_GENERAL_CALL_ADDR, &[SOFT_RESET_CMD])
@@ -193,7 +193,7 @@ where
 
         if let Err(_e) = write_result {
             #[cfg(feature = "defmt")]
-            defmt::warn!("stcc4: soft reset not acknowledged");
+            defmt::warn!("STCC4_driver: soft reset not acknowledged");
         }
 
         self.delay.delay_ms(10).await;
@@ -205,7 +205,7 @@ where
     pub async fn perform_factory_reset(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: perform factory reset");
+        defmt::debug!("STCC4_driver: perform factory reset");
         self.send_wait(CommandId::PerformFactoryReset).await
     }
 
@@ -213,7 +213,7 @@ where
     pub async fn perform_self_test(&mut self) -> Result<SelfTestResult, I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: perform self test");
+        defmt::debug!("STCC4_driver: perform self test");
         let mut data = [0u16; 1];
         self.send_wait_read(CommandId::PerformSelfTest, &mut data)
             .await?;
@@ -224,7 +224,7 @@ where
     pub async fn enable_testing_mode(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: enable testing mode");
+        defmt::debug!("STCC4_driver: enable testing mode");
         self.send_wait(CommandId::EnableTestingMode).await
     }
 
@@ -232,7 +232,7 @@ where
     pub async fn disable_testing_mode(&mut self) -> Result<(), I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: disable testing mode");
+        defmt::debug!("STCC4_driver: disable testing mode");
         self.send_wait(CommandId::DisableTestingMode).await
     }
 
@@ -243,7 +243,7 @@ where
     ) -> Result<FrcCorrection, I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: perform forced recalibration");
+        defmt::debug!("STCC4_driver: perform forced recalibration");
 
         let data = [target_co2_ppm];
         self.send_write_wait_read(CommandId::PerformForcedRecalibration, &data, 1)
@@ -255,7 +255,7 @@ where
     pub async fn get_product_id(&mut self) -> Result<ProductId, I2C::Error> {
         self.check_state(ModuleState::Idle)?;
         #[cfg(feature = "defmt")]
-        defmt::info!("stcc4: get product id");
+        defmt::debug!("STCC4_driver: get product id");
 
         let mut data = [0u16; 6];
         self.send_wait_read(CommandId::GetProductId, &mut data)
@@ -285,7 +285,7 @@ where
         let delay_ms = get_execution_time(command);
         if delay_ms > 0 {
             #[cfg(feature = "defmt")]
-            defmt::trace!("stcc4: wait {} ms", delay_ms);
+            defmt::trace!("STCC4_driver: wait {} ms", delay_ms);
             self.delay.delay_ms(delay_ms).await;
         }
         Ok(())
@@ -300,7 +300,7 @@ where
         let delay_ms = get_execution_time(command);
         if delay_ms > 0 {
             #[cfg(feature = "defmt")]
-            defmt::trace!("stcc4: wait {} ms", delay_ms);
+            defmt::trace!("STCC4_driver: wait {} ms", delay_ms);
             self.delay.delay_ms(delay_ms).await;
         }
         self.read_words(data).await
@@ -315,7 +315,7 @@ where
         let delay_ms = get_execution_time(command);
         if delay_ms > 0 {
             #[cfg(feature = "defmt")]
-            defmt::trace!("stcc4: wait {} ms", delay_ms);
+            defmt::trace!("STCC4_driver: wait {} ms", delay_ms);
             self.delay.delay_ms(delay_ms).await;
         }
         Ok(())
@@ -331,7 +331,7 @@ where
         let delay_ms = get_execution_time(command);
         if delay_ms > 0 {
             #[cfg(feature = "defmt")]
-            defmt::trace!("stcc4: wait {} ms", delay_ms);
+            defmt::trace!("STCC4_driver: wait {} ms", delay_ms);
             self.delay.delay_ms(delay_ms).await;
         }
 
@@ -345,7 +345,7 @@ where
 
     async fn write_command(&mut self, command: CommandId) -> Result<(), I2C::Error> {
         #[cfg(feature = "defmt")]
-        defmt::trace!("stcc4: write cmd 0x{=u16:04X}", command as u16);
+        defmt::trace!("STCC4_driver: write cmd 0x{=u16:04X}", command as u16);
 
         self.i2c
             .write(self.address, &(command as u16).to_be_bytes())
@@ -378,7 +378,11 @@ where
         }
 
         #[cfg(feature = "defmt")]
-        defmt::trace!("stcc4: write cmd 0x{=u16:04X} ({} words)", command as u16, data.len());
+        defmt::trace!(
+            "STCC4_driver: write cmd 0x{=u16:04X} ({} words)",
+            command as u16,
+            data.len()
+        );
 
         self.i2c
             .write(self.address, &buf[..required_len])
@@ -432,7 +436,10 @@ mod tests {
 
     impl I2cMock {
         fn new(transactions: Vec<Transaction>) -> Self {
-            Self { transactions, index: 0 }
+            Self {
+                transactions,
+                index: 0,
+            }
         }
 
         fn next(&mut self) -> &Transaction {
@@ -501,7 +508,6 @@ mod tests {
         let crc = crate::crc_internal::generate_crc(&bytes);
         [bytes[0], bytes[1], crc]
     }
-
 
     #[test]
     /// Verifies frame encoding for RHT compensation (async).
@@ -812,9 +818,10 @@ mod tests {
     #[test]
     /// Verifies read/write I2C error mapping (async).
     fn test_error_mapping_async() {
-        let transactions = vec![
-            Transaction::WriteError(STCC4_ADDR_DEFAULT, vec![0x21, 0x8B]),
-        ];
+        let transactions = vec![Transaction::WriteError(
+            STCC4_ADDR_DEFAULT,
+            vec![0x21, 0x8B],
+        )];
         let i2c = I2cMock::new(transactions);
         let mut stcc4 = Stcc4::new(NoopDelay, i2c);
 
